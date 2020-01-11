@@ -10,7 +10,7 @@ const {
 } = require('graphql');
 const axios = require('axios');
 
-const itemsHost = 'http://localhost:3000';
+const itemsHost = 'http://localhost:4100';
 const spacexHost = 'http://api.spacexdata.com/v3';
 
 const ItemType = new GraphQLObjectType({
