@@ -84,10 +84,10 @@ const RootQuery = new GraphQLObjectType({
         rocket: {
             type: RocketType,
             args: {
-                id: { type: GraphQLInt }
+                rocket_id: { type: GraphQLString }
             },
-            resolve(parentValue, { id }) {
-                return axios.get(`${spacexHost}/rockets/${id}`)
+            resolve(parentValue, { rocket_id }) {
+                return axios.get(`${spacexHost}/rockets/${rocket_id}`)
                     .then(({ data }) => data);
             }
         },
