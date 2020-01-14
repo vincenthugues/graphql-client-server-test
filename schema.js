@@ -113,7 +113,7 @@ const mutation = new GraphQLObjectType({
             },
             resolve(parentValue, { name, price, stock }) {
                 return axios.post(`${itemsHost}/items`, { name, price, stock })
-                    .then(res => res.data);
+                    .then(({ data }) => data);
             }
         },
         editItem: {

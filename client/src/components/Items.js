@@ -1,6 +1,6 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import gql from 'graphql-tag';
-import { Query, useMutation } from 'react-apollo';
+import { useMutation, useQuery } from 'react-apollo';
 import { Link } from 'react-router-dom';
 
 const ItemsQuery = gql`
@@ -29,19 +29,24 @@ const AddItem = () => {
   const [name, setName] = useState('');
   const [price, setPrice] = useState(1.50);
   const [stock, setStock] = useState(10);
-  const [addItem, { loading, error, data }] = useMutation(addItemMutation);
+  const [addItem, { loading, error }] = useMutation(addItemMutation, {
+    update: (cache, { data: { addItem: newItem } }) => {
+      const { items } = cache.readQuery({ query: ItemsQuery });
+      cache.writeQuery({
+        query: ItemsQuery,
+        data: { items: [...items, newItem] },
+      });
+    }
+  });
 
-  const onAddItem = event => {
+  const onAddItem = async event => {
     event.preventDefault();
 
-    addItem({
-      variables: { name, price, stock },
-    })
-    .then(() => {
-      setName('');
-      setPrice(1.50);
-      setStock(10);
-    });
+    await addItem({ variables: { name, price, stock } });
+
+    setName('');
+    setPrice(1.50);
+    setStock(10);
   };
 
   const onFieldChange = (setValueHandler, castHandler) => ({ target: { value } }) =>
@@ -56,35 +61,33 @@ const AddItem = () => {
         <input value={stock} onChange={onFieldChange(setStock, parseInt)} type="number" step="1" min="0" required></input>
         <input type="submit" />
       </form>
+      {loading && <h4>Loading...</h4>}
+      {error && <h4>Error: {error}</h4>}
     </div>
   );
 };
 
-const Items = () => (
-  <div style={{ display: 'flex', flexDirection: 'column' }}>
-    <h2>Items</h2>
-    <Query query={ItemsQuery}>
-      {({ loading, error, data }) => {
-        if (loading) return <h4>Loading...</h4>;
-        if (error) console.log(error);
+const Items = () => {
+  const { loading, error, data } = useQuery(ItemsQuery);
 
-        return (
-          <Fragment>
-            {data.items.map(({ id, name, price, stock }) => (
-              <div key={id}>
-                <Link to={`/item/${id}`}>
-                  #{id}
-                </Link>
-                {' '}<b>{name}</b> - {price} ({stock})
-              </div>
-            ))}
-          </Fragment>
-        );
-      }}
-    </Query>
-    <br />
-    <AddItem />
-  </div>
-);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <h2>Items</h2>
+        {loading && <h4>Loading...</h4>}
+        {error && <h4>Error: {error}</h4>}
+
+        {data && data.items.map(({ id, name, price, stock }) => (
+          <div key={id}>
+            <Link to={`/item/${id}`}>
+              #{id}
+            </Link>
+            {' '}<b>{name}</b> - {price} ({stock})
+          </div>
+        ))}
+      <br />
+      <AddItem />
+    </div>
+  );
+};
 
 export default Items;
