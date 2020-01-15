@@ -14,6 +14,17 @@ const ItemQuery = gql`
   }
 `;
 
+const ItemsQuery = gql`
+  query ItemsQuery {
+    items {
+      id
+      name
+      price
+      stock
+    }
+  }
+`;
+
 const editItemMutation = gql`
   mutation editItem($id: String!, $name: String, $price: Float, $stock: Int) {
     editItem(id: $id, name: $name, price: $price, stock: $stock) {
@@ -61,7 +72,15 @@ const ItemView = ({ item: { id, name, price, stock }, onIncreaseStock, onDecreas
 const Item = ({ match: { params: { id } } }) => {
   const { loading: queryLoading, error: queryError, data } = useQuery(ItemQuery, { variables: { id } });
   const [ editItem, { loading: editLoading, error: editError } ] = useMutation(editItemMutation);
-  const [ deleteItem, { loading: deleteLoading, error: deleteError, data: deletedItem } ] = useMutation(deleteItemMutation);
+  const [ deleteItem, { loading: deleteLoading, error: deleteError, data: deletedItem } ] = useMutation(deleteItemMutation, {
+    update: cache => {
+      const { items } = cache.readQuery({ query: ItemsQuery });
+      cache.writeQuery({
+        query: ItemsQuery,
+        data: { items: items.filter(item => item.id !== id) },
+      });
+    }
+  });
   const onUpdateStock = stock => editItem({ variables: { id, stock } });
   const onDeleteItem = () => deleteItem({ variables: { id } });
 
