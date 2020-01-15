@@ -11,10 +11,8 @@ import Rocket from './components/Rocket';
 import Items from './components/Items';
 import Item from './components/Item';
 
-const SERVER_HOST = 'http://localhost:4000';
-
 const client = new ApolloClient({
-  uri: `${SERVER_HOST}/graphql`,
+  uri: '/graphql',
 })
 
 const SpaceX = () => (
