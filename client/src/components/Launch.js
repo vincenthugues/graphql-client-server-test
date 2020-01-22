@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Link } from 'react-router-dom';
+import { Loader } from 'semantic-ui-react';
 
 const LaunchQuery = gql`
   query LaunchQuery($flight_number: Int!) {
@@ -25,7 +26,7 @@ const Launch = ({ match: { params: { flight_number } } }) => (
     <h2>Launch</h2>
     <Query query={LaunchQuery} variables={{ flight_number: parseInt(flight_number) }}>
       {({ loading, error, data }) => {
-        if (loading) return <h4>Loading...</h4>;
+        if (loading) return <Loader active />;
         if (error) {
           console.log(error.message);
           return <h4>Unable to get data for this launch</h4>;

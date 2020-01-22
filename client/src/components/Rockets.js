@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Link } from 'react-router-dom';
+import { Loader } from 'semantic-ui-react';
 
 const RocketsQuery = gql`
   query RocketsQuery {
@@ -18,7 +19,7 @@ const Rockets = () => (
     <h2>Rockets</h2>
     <Query query={RocketsQuery}>
       {({ loading, error, data }) => {
-        if (loading) return <h4>Loading...</h4>;
+        if (loading) return <Loader active />;
         if (error) console.log(error);
 
         return (

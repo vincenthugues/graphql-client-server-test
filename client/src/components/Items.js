@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { useMutation, useQuery } from 'react-apollo';
 import { Link } from 'react-router-dom';
+import { Input, Loader } from 'semantic-ui-react';
 
 const ItemsQuery = gql`
   query ItemsQuery {
@@ -56,12 +57,12 @@ const AddItem = () => {
     <div>
       Add a new item:
       <form onSubmit={onAddItem} autoComplete="off">
-        <input value={name} onChange={onFieldChange(setName)} required></input>
-        <input value={price} onChange={onFieldChange(setPrice, parseFloat)} type="number" step=".1" min="0" required></input>
-        <input value={stock} onChange={onFieldChange(setStock, parseInt)} type="number" step="1" min="0" required></input>
-        <input type="submit" />
+        <Input label="Name" size="mini" value={name} onChange={onFieldChange(setName)} required />
+        <Input label="Price" size="mini" value={price} onChange={onFieldChange(setPrice, parseFloat)} type="number" step=".1" min="0" required />
+        <Input label="Stock" size="mini" value={stock} onChange={onFieldChange(setStock, parseInt)} type="number" step="1" min="0" required />
+        <Input size="mini" type="submit" />
       </form>
-      {loading && <h4>Loading...</h4>}
+      {loading && <Loader active />}
       {error && <h4>Error: {error}</h4>}
     </div>
   );
@@ -73,7 +74,7 @@ const Items = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h2>Items</h2>
-        {loading && <h4>Loading...</h4>}
+        {loading && <Loader active />}
         {error && <h4>Error: {error}</h4>}
 
         {data && data.items.map(({ id, name, price, stock }) => (

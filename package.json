@@ -11,7 +11,9 @@
     "dev": "concurrently \"npm run json:server\" \"npm run server\" \"npm run client\""
   },
   "nodemonConfig": {
-    "ignore": ["data.json"]
+    "ignore": [
+      "data.json"
+    ]
   },
   "author": "",
   "license": "ISC",

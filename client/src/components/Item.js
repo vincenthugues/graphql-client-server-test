@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import gql from 'graphql-tag';
 import { useMutation, useQuery } from 'react-apollo';
 import { Link } from 'react-router-dom';
+import { Button, Loader } from 'semantic-ui-react';
 
 const ItemQuery = gql`
   query ItemQuery($id: String!) {
@@ -47,7 +48,13 @@ const deleteItemMutation = gql`
   }
 `;
 
-const ItemView = ({ item: { id, name, price, stock }, onIncreaseStock, onDecreaseStock, onDeleteItem, isDeleted }) => (
+const ItemView = ({
+  item: { id, name, price, stock },
+  onIncreaseStock,
+  onDecreaseStock,
+  onDeleteItem,
+  isDeleted
+}) => (
   <Fragment>
     <h2>Item</h2>
     {isDeleted ? (
@@ -57,11 +64,11 @@ const ItemView = ({ item: { id, name, price, stock }, onIncreaseStock, onDecreas
         <div>#{id} <b>{name}</b> - {price} ({stock})</div>
         <br />
         <div>
-          <input type="button" onClick={onIncreaseStock} value="Stock+" />
-          <input type="button" onClick={onDecreaseStock} value="Stock-" />
+          <Button content="Stock +" onClick={onIncreaseStock} />
+          <Button content="Stock -" onClick={onDecreaseStock} />
         </div>
         <br />
-        <input type="button" onClick={onDeleteItem} value="Delete" />
+        <Button content="Delete" onClick={onDeleteItem} />
       </Fragment>
     )}
     <br />
@@ -84,7 +91,7 @@ const Item = ({ match: { params: { id } } }) => {
   const onUpdateStock = stock => editItem({ variables: { id, stock } });
   const onDeleteItem = () => deleteItem({ variables: { id } });
 
-  if (queryLoading || editLoading || deleteLoading) return <h4>Loading...</h4>;
+  if (queryLoading || editLoading || deleteLoading) return <Loader active />;
   if (queryError) return <h4>Unable to get data for this item: {queryError.message}</h4>;
   if (editError) return <h4>Unable to update this item: {editError.message}</h4>;
   if (deleteError) return <h4>Unable to delete this item: {deleteError.message}</h4>;
